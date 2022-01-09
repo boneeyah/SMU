@@ -1,0 +1,125 @@
+---
+title: "ForLiveSession2"
+author: "Miguel Bonilla"
+date: "08/01/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+###this is the rmarkdown file for "for live session 2" assignment
+```{r}
+#load libraries to be used
+library(ggplot2)
+library(dplyr)
+library(ggthemes)
+```
+
+```{r}
+#load the file onto R
+cols = c("position" = "factor", "height" = "factor", "college" = "factor")
+BBall <- read.csv("C:\\Users\\Migue\\Documents\\SMU\\Spring 2022\\6306 - Doing Data Science\\Unit2\\PlayersBBall.csv", header = TRUE, colClasses = c("position" = "factor", "height" = "numeric","college" = "factor", "weight" = "numeric"))
+summary(BBall$position)
+```
+
+#First part visually represent the number of players in each position
+
+```{r}
+#easiest way to see number of players by position is a bar chart since these are classes
+
+BBall %>% ggplot(aes(x = position)) + geom_bar(fill = "Darkslategray") +theme_stata() + ggtitle("Count of NBA Players by Position \n (1950-2018)")
+
+```
+
+#second part, visually investigate that the distribution of the weights of centers is greater than the weights of forwards
+
+```{r}
+#start by setting up plot window to 2 columns using par(mfrow())
+par(mfrow = c(2,1))
+
+BBall[BBall$position == "C",] %>% ggplot(aes(x = weight)) + geom_histogram(fill = "darkslategray") +ggtitle("Weight Distribution for NBA Centers") + theme_stata()
+BBall[BBall$position == "F",] %>% ggplot(aes(x = weight)) + geom_histogram(fill = "darkslategray") +ggtitle("Weight Distribution for NBA Forwards")+ theme_stata()
+```
+
+```{r}
+#second attempt at showing the difference in distribution using a single plot instead of side by side (with a curve line instead of adjusting window)
+
+BBall[BBall$position == "C" | BBall$position == "F",] %>% ggplot(aes(x = position, y = weight)) + geom_boxplot(fill = "darkslategray", color = "#4c9c9c") +theme_stata() + ggtitle("Weight Distributions for NBA Centers \n & Forwards")
+```
+#third part visually investigate if height of C is higher than height of F
+```{r}
+#did some data wrangling to clean up the table to change height formats from ft-in to feet in decimal form, ex. 6-3 -> 6.25
+class(BBall$height)
+BBall[BBall$position == "C" | BBall$position == "F",] %>%  ggplot(aes(x = position, y = height)) + geom_boxplot(fill = "darkslategray", color = "#4c9c9c") + theme_stata()+ ggtitle("Height Distribution of NBA Centers \n & Forwards")
+```
+#fourth part, use dataset to visually investigate if the distribution of height is different between any of the positions
+```{r}
+#not sure about this one, I would still think a boxplot comparing all the positions
+BBall[BBall$position %in% c("C", "F", "C-F", "F-C", "G", "F-G", "G-F"),] %>%  ggplot(aes(x = position, y = height)) + geom_boxplot(fill = "darkslategray", color = "#4c9c9c") + theme_stata() + ggtitle("Height Distribution of NBA Players \n by Position") 
+```
+
+#fifth section, visualizing how height changes by player's weight
+```{r}
+#how does x = weight explains  y =  height
+
+BBall %>%  ggplot(aes(x = weight, y = height)) + geom_point(position = "Jitter", aes(color = position)) + geom_smooth() + theme_stata() + scale_color_tableau() + ggtitle("Height (ft) vs. Weight (lbs) for NBA Players")
+```
+#section 6, is there a difference for the relationship between height and weight for different positions
+```{r}
+BBall[BBall$position %in% c("C", "F", "C-F", "F-C", "G", "F-G", "G-F"),] %>%  ggplot(aes(x = weight, y = height)) + geom_point(position = "jitter", aes(color = position)) + geom_smooth() +facet_wrap(~position) + theme_stata() + scale_color_tableau() + ggtitle("Height (ft) vs. Weight (lbs) for NBA Players")
+```
+#section 7 analyze the claim (visually) by historian that players heights have increased over the years
+```{r}
+#to analyze this we will check a players starting year (as opposed to end year to account for players with shorter/longer careers)
+#picking career start to control for players who might have joined at a younger/older age
+BBall %>%  ggplot(aes(x = year_start, y = height)) + geom_point(position = "jitter", aes(color = position)) + geom_smooth() + theme_stata() + scale_color_tableau() + ggtitle("NBA Players Height by Year of Career Start")
+
+```
+#section 8
+```{r}
+library(plotly) #load plotly to build 3d plot
+BBall[BBall$position %in% c("C", "F", "C-F", "F-C", "G", "F-G", "G-F"),] %>% plot_ly(x = ~height, y = ~weight, z = ~year_start, color = ~position) %>%  add_markers() %>% layout(scene = list(xaxis = list(title = "Player Height (ft)"),
+                                                                                                                                                                                              yaxis = list(title = "Player Weight (lbs)"),
+                                                                                                                                                                                              zaxis = list(title = "Year of Career Start")),legend = list(title = list(text = "<b>Position<b>")))
+```
+#section 9
+
+```{r}
+#picked animated bubble chart, to visualize trend over time
+library(gganimate) #needed to analyze a trend over time
+library(gifski) #needed to render the animation into gif
+TopSchools = c("University of Kentucky", "University of California, Los Angeles", "University of North Carolina", 
+                           "University of Kansas", "Duke University","Indiana University", "University of Notre Dame")
+schools = c("Duke","Indiana University", "UCLA", "Kansas", "Kentucky", "UNC", "Notre Dame")
+p <- BBall[BBall$college %in% TopSchools & BBall$year_start > 1997,] %>% 
+  ggplot(aes(x = college, fill = college)) + 
+  geom_bar()+ scale_x_discrete(labels = schools) +
+  theme_stata()+ scale_fill_tableau() +
+  labs(title = 'Players Drafted into the NBA by School \n Year: {frame_time}') +
+  transition_time(year_start) +
+  enter_fade() + 
+  enter_grow() +
+  ease_aes('sine-in-out')
+animate(p, width = 826, height = 525, duration = 20)
+```
+#last part, separate dataset Visually test the claim that the distribution of incomes increase (mean or median) as the education level rises
+```{r}
+library(plotly)
+EdIncm <- read.csv("C:\\Users\\Migue\\Documents\\SMU\\Spring 2022\\6306 - Doing Data Science\\Unit2\\EducationIncome.csv", header = TRUE, colClasses = c( "Educ" = "factor"))
+EdIncm
+EdSort = c("<12", "12", "13-15", "16", ">16") #order to re-sort x axis
+summary(EdIncm$Educ)
+E <- EdIncm %>% ggplot(aes(x = Educ, y = Income2005)) + geom_boxplot(color = "#4c9c9c", fill = "darkslategray") +scale_x_discrete(labels = EdSort) + scale_y_continuous(labels = scales::comma) + theme_stata() + stat_summary(fun = mean, color = "white", shape = 18) + ggtitle("Income for 2005 vs Educational Level")
+E
+ggplotly(E)
+```
+
