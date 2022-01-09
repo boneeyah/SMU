@@ -27,7 +27,7 @@ library(ggthemes)
 ```{r}
 #load the file onto R
 cols = c("position" = "factor", "height" = "factor", "college" = "factor")
-BBall <- read.csv("C:\\Users\\Migue\\Documents\\SMU\\Spring 2022\\6306 - Doing Data Science\\Unit2\\PlayersBBall.csv", header = TRUE, colClasses = c("position" = "factor", "height" = "numeric","college" = "factor", "weight" = "numeric"))
+BBall <- read.csv("C:\\PlayersBBall.csv", header = TRUE, colClasses = c("position" = "factor", "height" = "numeric","college" = "factor", "weight" = "numeric"))
 summary(BBall$position)
 ```
 
