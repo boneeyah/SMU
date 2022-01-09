@@ -1,0 +1,19 @@
+---
+title: "Unit 1 Iris"
+author: "Bonilla"
+date: "02/01/2022"
+output: html_document
+---
+
+# Iris Data
+## Summary of Sepal Length
+
+```{r}
+
+#Summary of Iris Data
+summary(iris$Sepal.Length)
+```
+
+``` {r}
+hist(iris$Sepal.Length, col = "Purple", main = "Histogram of Iris Sepal Length")
+```
