@@ -1,0 +1,145 @@
+---
+title: "Unit3 markdown"
+author: "Miguel Bonilla"
+date: "16/01/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+#markdown file for live session 3 assignment
+
+```{r}
+#load libraries
+library(dplyr)
+library(ggplot2)
+library(GGally)
+library(ggthemes)
+library(tidyr)
+
+```
+#Part 1
+```{r}
+#load fifa csv file into R
+
+Fifa <- read.csv("C:\\users\\migue\\desktop\\fifaplayers.csv", header = TRUE, colClasses = 
+                   c("Position" = "factor",
+                     "Preferred.Foot" = "factor"))
+Fifa
+```
+
+```{r}
+#filter a dataset with LM and LF
+LMLF = Fifa %>% filter(Position %in% c("LM", "LF"))
+p <- LMLF %>% select(Agility, Acceleration, Position) %>%
+  ggpairs(aes(color = Position), cardinality_threshold = 28)+theme_solarized()+scale_fill_calc()+scale_color_calc()
+p
+```
+
+
+```{r}
+#create separate vectors for each position by filtering for position and selecting for agility
+LFagil <- LMLF %>% filter(Position == "LF") %>% select(Agility)
+LMagil <- LMLF %>% filter(Position == "LM") %>% select(Agility)
+
+#find critical values using qt
+
+qt(.025, 1108)
+
+#conduct a two-sample t-test assuming equal variances (pooled)
+t.test(LFagil, LMagil, var.equal = TRUE)
+
+
+```
+
+```{r}
+#t-test assumptions met
+#create a histogram of agility per position
+LMLF %>% ggplot(aes(x=Agility, fill = Position))+geom_histogram()+facet_wrap(~Position)+theme_solarized()+scale_fill_calc()
+
+LMLF %>% filter(Position=="LM") %>% ggplot(aes(x=Agility, fill = Position))+
+  geom_histogram(fill = "#ff420e")+theme_solarized()+ggtitle("Left Midfielders Agility Ratings")
+LMLF %>% filter(Position=="LF") %>% ggplot(aes(x=Agility, fill = Position))+
+  geom_histogram(fill = "#004586")+theme_solarized()+ggtitle("Left Forwards Agility Ratings")
+#boxplots to see spread of distribution
+LMLF %>% ggplot(aes(x=Position, y=Agility, fill = Position))+geom_boxplot(color = "black")+theme_solarized()+scale_fill_calc()
+```
+
+```{r}
+#cut ovreall into grades E-A
+Fifa <- Fifa %>% mutate(OverallGrade = cut(Overall, breaks = c(45, 55, 65, 75, 85, 95), labels = c("E", "D", "C", "B", "A")))
+#convert height to a usable format ft in decimal using separate and mutate
+Fifa <- Fifa %>% separate(Height, c("ft", "inches"),"'", convert = TRUE)
+Fifa <- Fifa %>% mutate(Height = ft + inches/12)
+
+```
+
+```{r}
+#Use GGpairs to compare cat variables preferred.foot and overallgrades to height, sprint, and heading
+Fifa %>% filter(Preferred.Foot %in% c("Left", "Right")) %>% 
+  select(Height, SprintSpeed, HeadingAccuracy, OverallGrade, Preferred.Foot) %>% 
+  ggpairs(aes(color = OverallGrade), proportions = "auto")+
+  theme_solarized(base_size = 8)+scale_color_calc()+scale_fill_calc()
+
+
+```
+
+```{r}
+#Compare medians 
+Medians <- Fifa %>%
+  group_by(OverallGrade) %>% 
+  filter(!is.na(SprintSpeed)) %>% 
+  summarise(players = n(), Sprint = median(SprintSpeed), Heading = median(HeadingAccuracy), heights = median(Height)) %>% 
+  arrange(desc(OverallGrade))
+Medians
+
+#standard deviations
+stdevs <- Fifa %>% 
+  group_by(OverallGrade) %>% 
+  filter(!is.na(SprintSpeed)) %>% 
+  summarise(players = n(), Sprint = sd(SprintSpeed), Heading = sd(HeadingAccuracy), heights = sd(Height)) %>% 
+  arrange(desc(OverallGrade))
+stdevs
+```
+
+
+```{r}
+#do face_wraps for height and speed and height and heading accuracy
+Fifa %>% ggplot(aes(x = Height, y=HeadingAccuracy))+geom_jitter(aes(color = OverallGrade))+geom_smooth()+
+  facet_wrap(~OverallGrade)+scale_color_calc()+theme_solarized()
+?scale_color_calc
+Fifa
+
+```
+
+
+```{r}
+#create new group for overall positions using case_when
+
+Fifa <- Fifa %>% 
+  mutate(PositionGroup = case_when(
+  Position %in% c("ST", "RF", "LF", "CF", "LW", "RW", "RS", "LS") ~ "Forward",
+  Position %in% c("RCM", "LCM", "LDM", "CAM", "CDM", "RM", "LAM", "LM", "RDM", "CM", "RAM") ~ "Midfielder",
+  Position %in% c("RCB", "CB", "LCB", "LB", "RB", "RWB", "LWB") ~ "Defender",
+  Position == "GK" ~ "Goalkeeper"
+))
+
+Fifa %>% filter(!is.na(PositionGroup)) %>% 
+  ggplot(aes(x = Height, y = HeadingAccuracy))+
+  geom_jitter(aes(color = OverallGrade))+ geom_smooth()+
+  facet_wrap(~PositionGroup)+
+  theme_solarized() + scale_color_calc()
+```
+```{r}
+Fifa %>% filter(PositionGroup != "Goalkeeper") %>% 
+  ggplot(aes(x = Height, y = HeadingAccuracy))+geom_jitter(aes(color = OverallGrade))+geom_smooth()+theme_solarized()+scale_color_calc()
+Fifa %>% filter(PositionGroup != "Goalkeeper") %>% 
+  ggplot(aes(x = Height, y = HeadingAccuracy))+geom_jitter(aes(color = OverallGrade))+geom_smooth()+theme_solarized()+scale_color_calc()+facet_wrap(~OverallGrade)
+
+#3d plot
+
+#Fifa %>% filter(PositionGroup != "Goalkeeper")%>%  plot_ly(x = ~Overall, y = ~Height, z = ~HeadingAccuracy, color = ~OverallGrade)
+```
