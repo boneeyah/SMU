@@ -56,7 +56,6 @@ t.test(LFagil, LMagil, var.equal = TRUE)
 ```
 
 ```{r}
-#t-test assumptions met
 #create a histogram of agility per position
 LMLF %>% ggplot(aes(x=Agility, fill = Position))+geom_histogram()+facet_wrap(~Position)+theme_solarized()+scale_fill_calc()
 
