@@ -1,0 +1,11 @@
+#from stackoverflow
+
+library(ggplot2)
+z <- seq(-4,4,0.01)
+fz <- dnorm(z)
+q <- qnorm(0.1) # the quantile
+x <- seq(-4, q, 0.01)
+y <- c(dnorm(x), 0, 0)
+x <- c(x, q, -4)
+ggplot() + geom_line(aes(z, fz)) +
+           geom_polygon(data = data.frame(x=x, y=y), aes(x, y), fill='blue')
