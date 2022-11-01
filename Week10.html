@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Week 10</title>
     <style>
-        //#week10{border:1px solid red}
+        #week10{border:1px solid red}
         #form{background-color:blanchedalmond;}
     </style>
 </head>
@@ -37,23 +37,23 @@
             var val3 =document.getElementById('val3').value;
             var val12 = parseInt(val1)+parseInt(val2);
             var n = parseInt(val1)+parseInt(val2)+parseInt(val3);
-            var rectL =Math.floor(Math.sqrt((canvas.width * canvas.height)/n*canvas.height/canvas.width));
-            var rectW = canvas.width/n * Math.floor(canvas.height/rectL);
+            var rectL =Math.floor(Math.sqrt((canvas.width * canvas.height)/n*canvas.height/canvas.width)/10);
+            var rectW = canvas.width/(10*n) * Math.floor(canvas.height/rectL)/10;
             //ctx.fillStyle = '#FF0000';
             let x = 0;
             for (let i = 0; i<Math.floor(canvas.height/rectL); i++) {
             	for (let j = 0; j<Math.floor(canvas.width/rectW); j++){
                   x+=1;
                   let rectColor;
-                  if (x <= parseInt(val1)){
-                  rectColor = '#DE3163';} else if (x <= val12) {
+                  if (x <= parseInt(val1)*100){
+                  rectColor = '#DE3163';} else if (x <= val12*100) {
                   rectColor = '#40E0D0';} else {
                   rectColor = '#FFBF00';}
                   ctx.fillStyle = rectColor;
                   ctx.beginPath();
                   ctx.rect(j*rectW,i*rectL,rectW,rectL);
                   ctx.fill();
-                  ctx.stroke();
+                  //ctx.stroke();
                 }
             }
         }
