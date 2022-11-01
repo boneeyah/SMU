@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 10</title>
+    <style>
+        #week10{border:1px solid red}
+        #form{background-color:blanchedalmond;}
+    </style>
+</head>
+<body style="background-color:beige;">
+    <div id="form" style="position: absolute; left:800px; width:20%">
+        <form>
+            <label for="cat1">Category 1:</label><br>
+            <input type="text" id="cat1" name="cat1" value="Category 1">
+            <input type="number" id="val1" name="val1" value="Value 1" style="width: 40px;"><br>
+            <label for="cat2">Category 2:</label><br>
+            <input type="text" id="cat2" name="cat2" value="Category 2">
+            <input type="number" id="val2" name="val2" value="Value 2" style="width: 40px;"><br>
+            <label for="cat3">Category 3:</label><br>
+            <input type="text" id="cat3" name="cat3" value="Category 3">
+            <input type="number" id="val3" name="val3" value="Value 3" style="width: 40px;"><br>
+            <input type="button" value="Enter" onclick="myScript()">        
+        </form>
+    </div>
+    <canvas id="week10" width="720" height="900"></canvas>
+    <script>
+        function myScript(){
+            var canvas = document.getElementById('week10');
+            var ctx = canvas.getContext('2d');
+            var val1 =document.getElementById('val1').value;
+            var val2 =documnet.getElementById('val2').value;
+            var val3 =document.getElementById('val3').value;
+            ctx.fillRect(0,0,val1,100);
+        }
+    </script>
+</body>
+</html>
