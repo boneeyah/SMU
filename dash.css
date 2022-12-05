@@ -1,4 +1,4 @@
-#business_area_dropdown .Select, .Select div, .Select input,.Select span { 
+#content-filter .Select, .Select div, .Select input,.Select span { 
 background: #black  /*to change the background color of the options*/
 color: #white  /*to change the color of the options */
 }
