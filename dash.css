@@ -111,13 +111,13 @@ p {
   margin-top: 5px;
 }
 .dropdown .Select-control{
-  background-color: white;
+  background-color: black;
 }
 .dropdown .Select-menu-outer{
-  background-color: white;
+  background-color: black;
 }
 .dropdown .Select-value{
-  background-color: #3BA27A;
+  background-color: black;
   color: white;
   font-size: 14px;  
 }
