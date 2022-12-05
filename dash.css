@@ -122,7 +122,7 @@ p {
   font-size: 14px;  
 }
 .dropdown .VirtualizedSelectFocusedOption {
-  background-color: #a5ecd1;
+  background-color: black;
   color: black;
 }
 .dropdown .VirtualizedSelectOption  {
